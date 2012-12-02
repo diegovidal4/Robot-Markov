@@ -87,8 +87,7 @@ class Localizacion:
 			self.arr.append(p)
 		
 	def movaba(self,p):
-		if p.x+1<self.x and self.l[p.x-1][p.y]==0:
-			
+		if p.x+1<self.x and self.l[p.x-1][p.y]==0:		
 			self.aba.append(p)
 
 	def obtener_max(self,d):
@@ -138,6 +137,7 @@ class Localizacion:
 		m_der=Motor(b,PORT_B)
 		m_izq=Motor(b,PORT_C)
 		m=SynchronizedMotors(m_der,m_izq,0)
+		n=self.Bel
 		if(d=="abajo"):
 			n[self.cab,:]=0.00000001
 			self.Bel=n
@@ -171,7 +171,8 @@ class Localizacion:
 				
 			
 		elif(d=="arriba"):
-			n[self.x-self.ca,:]=0.00000001
+			aux=((self.x-1)-self.ca)
+			n[aux,:]=0.00000001
 			self.Bel=n
 			self.ca=self.ca+1
 			if(self.s=="abajo"):
@@ -201,7 +202,7 @@ class Localizacion:
 				m.brake()
 				self.s=d
 		elif(d=="izquierda"):
-			n[:,self.y-self.ci]=0.00000001
+			n[:,self.ci]=0.00000001
 			self.Bel=n
 			self.ci=self.ci+1
 			if(self.s=="abajo"):
@@ -231,18 +232,19 @@ class Localizacion:
 				m.brake()
 				self.s=d
 		else:
-			n[:,self.cd]=0.00000001
+			aux=((self.y-1)-self.cd)
+			n[:,aux]=0.00000001
 			self.Bel=n
 			self.cd=self.cd+1
 			if(self.s=="abajo"):
-				m_izq.turn(80,360)
+				m_der.turn(80,360)
 				time.sleep(2)
 				m.run(78)
 				time.sleep(0.8)
 				m.brake()
 				self.s=d		
 			elif(self.s=="arriba"):
-				m_der.turn(80,360)
+				m_izq.turn(80,360)
 				time.sleep(2)
 				m.run(78)
 				time.sleep(0.8)
@@ -301,13 +303,12 @@ L[6][4]=1
 loc=Localizacion(x,y,s,b)
 loc.l=L
 loc.bel(x,y)
-print loc.Bel
 for i in range(0,20):
 	x=sensor.get_sample()
 	print "luz: ",x	
-	print ""
-	loc.prob(x)
+	print "Bel:"
 	print loc.Bel
+	loc.prob(x)
 	loc.def_umbral(i)
 	print "Umbral:",loc.umbral
 	print "Cantidad de cuadros sobre el umbral: ",loc.contar_posibles()
