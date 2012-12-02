@@ -19,6 +19,12 @@ class posicion:
 
 class Localizacion:
 
+
+	#Constructor de la localizacion
+	#arr: Lista de movimientos posibles hacia arriba
+	#der: Lista de movimientos posibles hacia la derecha
+	#aba: Lista de movimientos posibles hacia abajo
+	#izq: Lista de movimientos posibles hacia la izquierda
 	def __init__(self,x,y,s,b):
 		self.arr=list()
 		self.der=list()
@@ -33,6 +39,10 @@ class Localizacion:
 		self.y=y
 		self.s=s
 		self.b=b
+		self.ca=0
+		self.cab=0
+		self.ci=0
+		self.cd=0
 		
 	def bel(self,x,y):
 		bel=np.zeros(x*y).reshape(x,y)
@@ -129,9 +139,9 @@ class Localizacion:
 		m_izq=Motor(b,PORT_C)
 		m=SynchronizedMotors(m_der,m_izq,0)
 		if(d=="abajo"):
-			n=np.roll(self.Bel,1,axis=0)
-			n[0,:]=0.00000001
+			n[self.cab,:]=0.00000001
 			self.Bel=n
+			self.cab=self.cab+1
 			if(self.s=="abajo"):
 				m.run(78)
 				time.sleep(0.8)
@@ -161,9 +171,9 @@ class Localizacion:
 				
 			
 		elif(d=="arriba"):
-			n=np.roll(self.Bel,-1,axis=0)
-			n[self.x-1,:]=0.00000001
+			n[self.x-self.ca,:]=0.00000001
 			self.Bel=n
+			self.ca=self.ca+1
 			if(self.s=="abajo"):
 				m_der.turn(80,720)
 				time.sleep(2)
@@ -191,9 +201,9 @@ class Localizacion:
 				m.brake()
 				self.s=d
 		elif(d=="izquierda"):
-			n=np.roll(self.Bel,-1,axis=1)
-			n[:,self.y-1]=0.00000001
+			n[:,self.y-self.ci]=0.00000001
 			self.Bel=n
+			self.ci=self.ci+1
 			if(self.s=="abajo"):
 				m_der.turn(80,360)
 				time.sleep(2)
@@ -221,9 +231,9 @@ class Localizacion:
 				m.brake()
 				self.s=d
 		else:
-			n=np.roll(self.Bel,1,axis=1)
-			n[:,0]=0.00000001
+			n[:,self.cd]=0.00000001
 			self.Bel=n
+			self.cd=self.cd+1
 			if(self.s=="abajo"):
 				m_izq.turn(80,360)
 				time.sleep(2)
