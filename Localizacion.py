@@ -25,6 +25,10 @@ class Localizacion:
 	#der: Lista de movimientos posibles hacia la derecha
 	#aba: Lista de movimientos posibles hacia abajo
 	#izq: Lista de movimientos posibles hacia la izquierda
+
+	#arriba
+#izquierda	#derecha      (Con el brick mirando hacia abajo)
+	#abajo
 	def __init__(self,x,y,s,b):
 		self.arr=list()
 		self.der=list()
@@ -73,21 +77,21 @@ class Localizacion:
 				else:
 					self.Bel[i][j]=self.Bel[i][j]*self.P(x,mub,sigmab)
 	def movizq(self,p):
-		if (p.y)-1>=0 and self.l[p.x][p.y-1]==0:
+		if (p.y)-1>=0 and self.s!="derecha":
 			#print "izq:"
 			#print p.x,p.y
 			self.izq.append(p)
 	def movder(self,p):
-		if p.y+1<self.y and self.l[p.x][p.y+1]==0:
+		if p.y+1<self.y and self.s!="izquierda":
 			#print "der:"
 			#print p.x,p.y
 			self.der.append(p)
 	def movarr(self,p):
-		if p.x-1>=0 and self.l[p.x-1][p.y]==0:
+		if p.x-1>=0 and self.s!="abajo":
 			self.arr.append(p)
 		
 	def movaba(self,p):
-		if p.x+1<self.x and self.l[p.x-1][p.y]==0:		
+		if p.x+1<self.x and self.s!="arriba":		
 			self.aba.append(p)
 
 	def obtener_max(self,d):
@@ -129,9 +133,17 @@ class Localizacion:
 					self.posi.append(p)
 					c+=1
 		return c
+	
+	
+	def localizado(self):
+		for i in range(0,self.x):
+			for j in range(0,self.y):
+				if self.Bel[i][j]>=0.9:
+					return True,i,j
+		return False,0,0
 
 	def def_umbral(self,x):	
-		self.umbral=0.0001
+		self.umbral=0.001
 
 	def mover(self,d):
 		m_der=Motor(b,PORT_B)
@@ -162,7 +174,7 @@ class Localizacion:
 				m.brake()
 				self.s=d
 			else:	
-				m_der.turn(80,360)
+				m_izq.turn(80,360)
 				time.sleep(2)
 				m.run(78)
 				time.sleep(0.8)
@@ -202,18 +214,19 @@ class Localizacion:
 				m.brake()
 				self.s=d
 		elif(d=="izquierda"):
-			n[:,self.ci]=0.00000001
+			aux=((self.y-1)-self.ci)
+			n[:,aux]=0.00000001
 			self.Bel=n
 			self.ci=self.ci+1
 			if(self.s=="abajo"):
-				m_der.turn(80,360)
+				m_izq.turn(80,360)
 				time.sleep(2)
 				m.run(78)
 				time.sleep(0.8)
 				m.brake()
 				self.s=d		
 			elif(self.s=="arriba"):
-				m_izq.turn(80,360)
+				m_der.turn(80,360)
 				time.sleep(2)
 				m.run(78)
 				time.sleep(0.8)
@@ -232,8 +245,8 @@ class Localizacion:
 				m.brake()
 				self.s=d
 		else:
-			aux=((self.y-1)-self.cd)
-			n[:,aux]=0.00000001
+			
+			n[:,self.cd]=0.00000001
 			self.Bel=n
 			self.cd=self.cd+1
 			if(self.s=="abajo"):
@@ -284,41 +297,49 @@ sleep(3)
 
 
 L=np.zeros(x*y).reshape(x,y)
-L[0][1]=1
-L[0][3]=1
-L[1][1]=1
-L[2][3]=1
-L[2][4]=1
-L[3][0]=1
-L[3][1]=1
-L[3][3]=1
-L[3][4]=1
-L[4][0]=1
-L[5][0]=1
-L[5][1]=1
-L[5][3]=1
-L[5][4]=1
-L[6][0]=1
-L[6][4]=1
+#L[0][1]=1
+#L[0][3]=1
+#L[1][1]=1
+#L[2][3]=1
+#L[2][4]=1
+#L[3][0]=1
+#L[3][1]=1
+#L[3][3]=1
+#L[3][4]=1
+#L[4][0]=1
+#L[5][0]=1
+#L[5][1]=1
+#L[5][3]=1
+#L[5][4]=1
+#L[6][0]=1
+#L[6][4]=1
+L[0][0]=1
+L[2][0]=1
+L[2][2]=1
+L[1][2]=1
 loc=Localizacion(x,y,s,b)
 loc.l=L
 loc.bel(x,y)
 for i in range(0,20):
-	x=sensor.get_sample()
-	print "luz: ",x	
-	print "Bel:"
-	print loc.Bel
-	loc.prob(x)
-	loc.def_umbral(i)
-	print "Umbral:",loc.umbral
-	print "Cantidad de cuadros sobre el umbral: ",loc.contar_posibles()
-	d=loc.decision()
-	loc.mover(d)
-	print "Normalizada:"
-	loc.normalizar(loc.Bel)
-	print loc.Bel
-	print "Mover robot a cuadro siguiente"
-	raw_input()
+		x=sensor.get_sample()
+		print "luz: ",x	
+		print "Bel:"
+		print loc.Bel
+		loc.prob(x)
+		loc.def_umbral(i)
+		print "Umbral:",loc.umbral
+		print "Cantidad de cuadros sobre el umbral: ",loc.contar_posibles()
+		d=loc.decision()
+		loc.mover(d)
+		print "Normalizada:"
+		loc.normalizar(loc.Bel)
+		print loc.Bel
+		a,b,c=loc.localizado()
+		if(a==True):
+			print "Se ha localizado el robot",b,c
+		else:
+			print "Mover robot a cuadro siguiente"
+			raw_input()
 
 
 
