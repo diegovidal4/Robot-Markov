@@ -117,7 +117,7 @@ class Localizacion:
 			ListaP['arriba']=ListaP['arriba']+(self.arr[i].bel)/len(self.posi)
 		for i in range(0,len(self.aba)-1):
 			ListaP['abajo']=ListaP['abajo']+(self.aba[i].bel)/len(self.posi)
-
+		print ListaP
 		self.obtener_max(ListaP)
 		print ListaP.keys()
 		dec=random.choice(ListaP.keys())
@@ -139,8 +139,8 @@ class Localizacion:
 		for i in range(0,self.x):
 			for j in range(0,self.y):
 				if self.Bel[i][j]>=0.9:
-					return True,i,j
-		return False,0,0
+					return {'True':True,'i':i,'j':j}
+		return {'False':False,'i':0,'j':0}
 
 	def def_umbral(self,x):	
 		self.umbral=0.001
@@ -317,6 +317,7 @@ L[0][0]=1
 L[2][0]=1
 L[2][2]=1
 L[1][2]=1
+L[0][2]=1
 loc=Localizacion(x,y,s,b)
 loc.l=L
 loc.bel(x,y)
@@ -334,12 +335,7 @@ for i in range(0,20):
 		print "Normalizada:"
 		loc.normalizar(loc.Bel)
 		print loc.Bel
-		a,b,c=loc.localizado()
-		if(a==True):
-			print "Se ha localizado el robot",b,c
-		else:
-			print "Mover robot a cuadro siguiente"
-			raw_input()
+		raw_input()
 
 
 
