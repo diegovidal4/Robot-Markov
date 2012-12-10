@@ -47,6 +47,8 @@ class Localizacion:
 		self.cab=0
 		self.ci=0
 		self.cd=0
+		self.m_der=Motor(b,PORT_B)
+		self.m_izq=Motor(b,PORT_C)
 		
 	def bel(self,x,y):
 		bel=np.zeros(x*y).reshape(x,y)
@@ -72,7 +74,7 @@ class Localizacion:
 	def prob(self,x):
 		for i in range(0,self.x):
 			for j in range(0,self.y):
-				if L[i][j]==1:
+				if self.l[i][j]==1:
 					self.Bel[i][j]=self.Bel[i][j]*self.P(x,mun,sigman)
 				else:
 					self.Bel[i][j]=self.Bel[i][j]*self.P(x,mub,sigmab)
@@ -128,7 +130,7 @@ class Localizacion:
 		c=0
 		for i in range(0,self.x):
 			for j in range(0,self.y):
-				if self.Bel[i][j]>=self.umbral:
+				if self.Bel[i][j]>self.umbral:
 					p=posicion(i,j,self.Bel[i][j])
 					self.posi.append(p)
 					c+=1
@@ -139,45 +141,45 @@ class Localizacion:
 		for i in range(0,self.x):
 			for j in range(0,self.y):
 				if self.Bel[i][j]>=0.9:
-					return {'True':True,'i':i,'j':j}
-		return {'False':False,'i':0,'j':0}
+					return True,i,j
+		return False,None,None
 
 	def def_umbral(self,x):	
-		self.umbral=0.001
+		self.umbral=0.00001
 
 	def mover(self,d):
-		m_der=Motor(b,PORT_B)
-		m_izq=Motor(b,PORT_C)
+		m_der=self.m_der
+		m_izq=self.m_izq
 		m=SynchronizedMotors(m_der,m_izq,0)
 		n=self.Bel
 		if(d=="abajo"):
-			n[self.cab,:]=0.00000001
+			n[self.cab,:]=0.00001
 			self.Bel=n
 			self.cab=self.cab+1
 			if(self.s=="abajo"):
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d		
 			elif(self.s=="arriba"):
 				m_der.turn(80,720)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d			
 			elif(self.s=="izquierda"):
 				m_izq.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 			else:	
 				m_izq.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d	
 				
@@ -190,27 +192,27 @@ class Localizacion:
 			if(self.s=="abajo"):
 				m_der.turn(80,720)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d		
 			elif(self.s=="arriba"):
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d			
 			elif(self.s=="izquierda"):
 				m_izq.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 			else:
 				m_der.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 		elif(d=="izquierda"):
@@ -221,27 +223,27 @@ class Localizacion:
 			if(self.s=="abajo"):
 				m_izq.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d		
 			elif(self.s=="arriba"):
 				m_der.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d			
 			elif(self.s=="izquierda"):
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 			else:
 				m_der.turn(80,720)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 		else:
@@ -252,27 +254,27 @@ class Localizacion:
 			if(self.s=="abajo"):
 				m_der.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d		
 			elif(self.s=="arriba"):
 				m_izq.turn(80,360)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d		
 			elif(self.s=="izquierda"):
 				m_izq.turn(80,720)
 				time.sleep(2)
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 			else:
-				m.run(78)
-				time.sleep(0.8)
+				m.run(85)
+				time.sleep(1.2)
 				m.brake()
 				self.s=d
 			
@@ -313,11 +315,9 @@ L=np.zeros(x*y).reshape(x,y)
 #L[5][4]=1
 #L[6][0]=1
 #L[6][4]=1
-L[0][0]=1
-L[2][0]=1
+L[0][1]=1
 L[2][2]=1
-L[1][2]=1
-L[0][2]=1
+L[2][1]=1
 loc=Localizacion(x,y,s,b)
 loc.l=L
 loc.bel(x,y)
@@ -331,11 +331,23 @@ for i in range(0,20):
 		print "Umbral:",loc.umbral
 		print "Cantidad de cuadros sobre el umbral: ",loc.contar_posibles()
 		d=loc.decision()
+		raw_input()
 		loc.mover(d)
 		print "Normalizada:"
 		loc.normalizar(loc.Bel)
 		print loc.Bel
-		raw_input()
+		r,n,c=loc.localizado()
+		if(r):
+			print "Localizado en ",n,",",c
+			print "Salida por 1,2:"
+			m=SynchronizedMotors(loc.m_der,loc.m_izq,0)
+			loc.m_der.turn(80,500)
+			m.run(80)
+			time.sleep(3)
+			m.brake()
+			break
+		else:
+			raw_input()
 
 
 
